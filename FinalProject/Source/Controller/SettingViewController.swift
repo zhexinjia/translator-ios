@@ -25,18 +25,18 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let about = "The TFHpple html parser was Created by Geoffrey Grosenbach\n\n The DLRadioButton was created by Davyd Liu\n\nNote:\nBecause of the xcode bug, the email feature only works in real device, not simulator"
-        if indexPath.section == 2 && indexPath.row == 1{
-            let alertController = UIAlertController(title: "Resources Reference", message: about, preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler:nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+        if (indexPath as NSIndexPath).section == 2 && (indexPath as NSIndexPath).row == 1{
+            let alertController = UIAlertController(title: "Resources Reference", message: about, preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil))
+            self.present(alertController, animated: true, completion: nil)
         }
     }
     
-    @IBAction func autoAddingButton(sender: AnyObject) {
+    @IBAction func autoAddingButton(_ sender: AnyObject) {
         
-        if autoAddingSwitch.on{
+        if autoAddingSwitch.isOn{
             SettingService.sharedSettingService.setAutoAdd(true)
         }else{
             SettingService.sharedSettingService.setAutoAdd(false)
@@ -46,8 +46,8 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
     }
     
     
-    @IBAction func setQuestionNum(sender: AnyObject) {
-        if setQuestionNumSwitch.on{
+    @IBAction func setQuestionNum(_ sender: AnyObject) {
+        if setQuestionNumSwitch.isOn{
             SettingService.sharedSettingService.setQuestionNum(20)
         }else{
             SettingService.sharedSettingService.setQuestionNum(10)
@@ -56,8 +56,8 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
     }
     
     
-    @IBAction func keyboardPopUp(sender: AnyObject) {
-        if keyboardPopUpSwitch.on{
+    @IBAction func keyboardPopUp(_ sender: AnyObject) {
+        if keyboardPopUpSwitch.isOn{
             SettingService.sharedSettingService.setAutoPopUpKeyboard(true)
         }else{
             SettingService.sharedSettingService.setAutoPopUpKeyboard(false)
@@ -65,7 +65,7 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         //print(SettingService.sharedSettingService.getAutoPopUPKeyboard())
     }
     
-    @IBAction func sendEmail(sender: AnyObject) {
+    @IBAction func sendEmail(_ sender: AnyObject) {
         let toRecipients = ["zhexinj@uoregon.edu"]
         let mc: MFMailComposeViewController = MFMailComposeViewController()
         mc.mailComposeDelegate = self
@@ -73,7 +73,7 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
         mc.setMessageBody("bug or feedback report", isHTML: false)
         mc.setToRecipients(toRecipients)
         if MFMailComposeViewController.canSendMail(){
-            self.presentViewController(mc, animated: true, completion: nil)
+            self.present(mc, animated: true, completion: nil)
         }else{
             print("can't send email")
         }
@@ -81,46 +81,46 @@ class SettingViewController: UITableViewController, MFMailComposeViewControllerD
     
     func updateSwitch(){
         if SettingService.sharedSettingService.getAutoAdd() == true{
-            autoAddingSwitch.on = true
+            autoAddingSwitch.isOn = true
         }else{
-            autoAddingSwitch.on = false
+            autoAddingSwitch.isOn = false
         }
         
         if SettingService.sharedSettingService.getQuestionNum() == 10{
-            setQuestionNumSwitch.on  = false
+            setQuestionNumSwitch.isOn  = false
         }else{
-            autoAddingSwitch.on = true
+            autoAddingSwitch.isOn = true
         }
         
         if SettingService.sharedSettingService.getAutoPopUPKeyboard() == true{
-            keyboardPopUpSwitch.on = true
+            keyboardPopUpSwitch.isOn = true
         }else{
-            keyboardPopUpSwitch.on = false
+            keyboardPopUpSwitch.isOn = false
         }
     }
     
     
     //email functions
     
-    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         switch result.rawValue{
             
-        case MFMailComposeResultCancelled.rawValue:
+        case MFMailComposeResult.cancelled.rawValue:
             NSLog("Mail Canceled")
             break;
-        case MFMailComposeResultSaved.rawValue:
+        case MFMailComposeResult.saved.rawValue:
             NSLog("Mail Saved")
             break
-        case MFMailComposeResultSent.rawValue:
+        case MFMailComposeResult.sent.rawValue:
             NSLog("Mail sent")
             break
-        case MFMailComposeResultFailed.rawValue:
+        case MFMailComposeResult.failed.rawValue:
             NSLog("Mail sent failed: %@", [error!.localizedDescription])
             break
         default:
             break
      
         }
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
 }

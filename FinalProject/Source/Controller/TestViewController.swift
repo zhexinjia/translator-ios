@@ -9,6 +9,26 @@
 import UIKit
 import CoreData
 import CoreDataService
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func <= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l <= r
+  default:
+    return !(rhs < lhs)
+  }
+}
+
 
 class TestViewController: UIViewController {
 
@@ -30,14 +50,14 @@ class TestViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         answerOneButton.otherButtons = [answerTwoButton, answerThreeButton]
-        submitButton.hidden = true
-        questionLabel.hidden = true
-        answerOneButton.hidden = true
-        answerTwoButton.hidden = true
-        answerThreeButton.hidden = true
+        submitButton.isHidden = true
+        questionLabel.isHidden = true
+        answerOneButton.isHidden = true
+        answerTwoButton.isHidden = true
+        answerThreeButton.isHidden = true
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,34 +66,34 @@ class TestViewController: UIViewController {
     
     
     
-    @IBAction func startTest(sender: AnyObject) {
+    @IBAction func startTest(_ sender: AnyObject) {
         testService = TestService()
         if testService?.getHistoryCount() <= 4{
             //print("You have no word in history")
-            let alertController = UIAlertController(title: "Generating Error", message: "You need at least 5 vocabularies in History to Generate a test. You have \(testService!.getHistoryCount()) in History", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler:nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            let alertController = UIAlertController(title: "Generating Error", message: "You need at least 5 vocabularies in History to Generate a test. You have \(testService!.getHistoryCount()) in History", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil))
+            self.present(alertController, animated: true, completion: nil)
         }else{
             questionNum = (testService?.getQuestionNum())!
-            submitButton.setTitle("Confirm", forState: UIControlState.Normal)
+            submitButton.setTitle("Confirm", for: UIControlState())
             result = "Test status: \n\n"
             
             generateQuestion()
-            submitButton.hidden = false
-            questionLabel.hidden = false
-            answerOneButton.hidden = false
-            answerTwoButton.hidden = false
-            answerThreeButton.hidden = false
+            submitButton.isHidden = false
+            questionLabel.isHidden = false
+            answerOneButton.isHidden = false
+            answerTwoButton.isHidden = false
+            answerThreeButton.isHidden = false
         }
         
     }
     
-    @IBAction func ConfirmButton(sender: AnyObject) {
+    @IBAction func ConfirmButton(_ sender: AnyObject) {
         if pickedAnswer == nil{
             //print("pick a answer")
-            let alertController = UIAlertController(title: "Pick an Answer", message: "You did not choose an Answer", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler:nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            let alertController = UIAlertController(title: "Pick an Answer", message: "You did not choose an Answer", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil))
+            self.present(alertController, animated: true, completion: nil)
         }else{
             if ((testService?.checkAnswer(pickedAnswer!)) == true){
                 //print("correct")
@@ -87,18 +107,18 @@ class TestViewController: UIViewController {
             if submitButton.currentTitle == "Finish"{
                 result += "Your total score is \(String(score))/\(String(questionNum))"
                 questionLabel.text = result
-                submitButton.hidden = true
+                submitButton.isHidden = true
                 //questionLabel.hidden = true
-                answerOneButton.hidden = true
-                answerTwoButton.hidden = true
-                answerThreeButton.hidden = true
+                answerOneButton.isHidden = true
+                answerTwoButton.isHidden = true
+                answerThreeButton.isHidden = true
             }else{
                 generateQuestion()
             }
         }
     }
     
-    @IBAction func AnswerPicked(sender: DLRadioButton){
+    @IBAction func AnswerPicked(_ sender: DLRadioButton){
         switch sender {
         case answerOneButton:
             //print("answer one clicked")
@@ -130,18 +150,18 @@ class TestViewController: UIViewController {
         
         
         questionLabel.text = question
-        answerOneButton.setTitle(answer1, forState: UIControlState.Normal)
-        answerTwoButton.setTitle(answer2, forState: UIControlState.Normal)
-        answerThreeButton.setTitle(answer3, forState: UIControlState.Normal)
+        answerOneButton.setTitle(answer1, for: UIControlState())
+        answerTwoButton.setTitle(answer2, for: UIControlState())
+        answerThreeButton.setTitle(answer3, for: UIControlState())
         
         if currentQuestionNum >= questionNum{
-            submitButton.setTitle("Finish", forState: UIControlState.Normal)
+            submitButton.setTitle("Finish", for: UIControlState())
             currentQuestionNum = 0
         }
         
     }
     
-    func getAlaphaAnswer(num:Int?) -> String{
+    func getAlaphaAnswer(_ num:Int?) -> String{
         if num == 0{
             return "A"
         }else if num == 1{

@@ -27,21 +27,21 @@ class DictViewController: UIViewController, UISearchBarDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
-        definitionLabel.hidden = true
+        definitionLabel.isHidden = true
         //searchBar.becomeFirstResponder()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         //popup keyboard as soon as main view is loaded
         if SettingService.sharedSettingService.getAutoPopUPKeyboard() == true{
             searchBar.becomeFirstResponder()
         }
         if SettingService.sharedSettingService.getAutoAdd() == true{
             autoAdd = true
-            autoAddButton.hidden = true
+            autoAddButton.isHidden = true
         }else{
             autoAdd = false
-            autoAddButton.hidden = false
+            autoAddButton.isHidden = false
         }
     }
    
@@ -50,7 +50,7 @@ class DictViewController: UIViewController, UISearchBarDelegate {
         super.didReceiveMemoryWarning()
     }
     
-    @IBAction func addToHistory(sender: AnyObject) {
+    @IBAction func addToHistory(_ sender: AnyObject) {
         guard word != nil else{
             return
         }
@@ -64,18 +64,18 @@ class DictViewController: UIViewController, UISearchBarDelegate {
         let vocabualry = self.word!
         if DataService.sharedDataService.saveWordToHistory(self.word!){
             //print("saved \(self.word) to History")
-            let alertController = UIAlertController(title: "Add Word", message: "Saved \(vocabualry) to History", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler:nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            let alertController = UIAlertController(title: "Add Word", message: "Saved \(vocabualry) to History", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil))
+            self.present(alertController, animated: true, completion: nil)
         }else{
             //print("\(self.word) is already in History")
-            let alertController = UIAlertController(title: "Add Word", message: "\(vocabualry) is already in History", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.Default, handler:nil))
-            self.presentViewController(alertController, animated: true, completion: nil)
+            let alertController = UIAlertController(title: "Add Word", message: "\(vocabualry) is already in History", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title:"OK", style: UIAlertActionStyle.default, handler:nil))
+            self.present(alertController, animated: true, completion: nil)
         }
     }
     
-    func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         if selectedScope == 0{
             displayDefinition = true
         }else{
@@ -84,7 +84,7 @@ class DictViewController: UIViewController, UISearchBarDelegate {
         displayLabel()
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchButtonClicked = true
         word = searchBar.text!
         sendStringtoWebView(word!)
@@ -92,7 +92,7 @@ class DictViewController: UIViewController, UISearchBarDelegate {
         view.endEditing(true)
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         view.endEditing(true)
     }
     
@@ -102,11 +102,11 @@ class DictViewController: UIViewController, UISearchBarDelegate {
         }
         
         activityIndicator.startAnimating()
-        definitionLabel.hidden = true
-        let mainQueue = dispatch_get_main_queue()
-        let globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
+        definitionLabel.isHidden = true
+        let mainQueue = DispatchQueue.main
+        let globalQueue = DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.high)
         
-        dispatch_async(globalQueue, {
+        globalQueue.async(execute: {
             
             let definitionString = DataService.sharedDataService.getDefination(self.word!)
             let exampleString = DataService.sharedDataService.getScentence(self.word!)
@@ -124,21 +124,21 @@ class DictViewController: UIViewController, UISearchBarDelegate {
             }
             
             
-            dispatch_async(mainQueue, {
+            mainQueue.async(execute: {
                 if self.displayDefinition == true{
                     self.definitionLabel.text = definitionString
                 }else{
                     self.definitionLabel.text = exampleString
                 }
                 self.activityIndicator.stopAnimating()
-                self.definitionLabel.hidden = false
+                self.definitionLabel.isHidden = false
             })
         })
     }
     
-    func sendStringtoWebView(word:String){
+    func sendStringtoWebView(_ word:String){
         let webViewController = self.tabBarController?.viewControllers![1] as! WebViewController
-        webViewController.setString(word.lowercaseString)
+        webViewController.setString(word.lowercased())
     }
 
 }

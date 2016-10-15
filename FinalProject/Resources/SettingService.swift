@@ -17,20 +17,20 @@ class SettingService{
     let coreDataService:CoreDataService
     let context:NSManagedObjectContext
     
-    let fetchRequest:NSFetchRequest
+    let fetchRequest:NSFetchRequest<AnyObject>
     
-    private init(){
+    fileprivate init(){
         coreDataService = CoreDataService.sharedCoreDataService
         context = coreDataService.mainQueueContext
         fetchRequest = NSFetchRequest(entityName: "Setting")
     }
     
-    func setAutoAdd(boolValue:Bool){
+    func setAutoAdd(_ boolValue:Bool){
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             if fetchedResult!.count == 0{
-                let entity = NSEntityDescription.insertNewObjectForEntityForName("Setting", inManagedObjectContext: context) as! Setting
-                entity.autoAdd = boolValue
+                let entity = NSEntityDescription.insertNewObject(forEntityName: "Setting", into: context) as! Setting
+                entity.autoAdd = boolValue as NSNumber?
                 entity.keyboardAutoPop = false
                 entity.questionNum = 10
                 try! context.save()
@@ -50,7 +50,7 @@ class SettingService{
     
     func getAutoAdd() -> Bool{
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             
             if let result = fetchedResult{
                 if result.count != 0{
@@ -62,16 +62,16 @@ class SettingService{
         return true
     }
     
-    func setQuestionNum(questionNum:Int){
+    func setQuestionNum(_ questionNum:Int){
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             if let result = fetchedResult{
                 //print(String(result.count))
                 //if let result = fetchedResult{
                     //print(String(result.count))
                     if result.count == 0{
-                        let entity = NSEntityDescription.insertNewObjectForEntityForName("Setting", inManagedObjectContext: context) as! Setting
-                        entity.questionNum = questionNum
+                        let entity = NSEntityDescription.insertNewObject(forEntityName: "Setting", into: context) as! Setting
+                        entity.questionNum = questionNum as NSNumber?
                         entity.autoAdd = true
                         entity.keyboardAutoPop = false
                         try! context.save()
@@ -94,7 +94,7 @@ class SettingService{
     
     func getQuestionNum() -> Int{
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             if let result = fetchedResult{
                 if result.count != 0{
                     return (result[0].questionNum as! Int)
@@ -105,14 +105,14 @@ class SettingService{
         return 10
     }
     
-    func setAutoPopUpKeyboard(boolValue: Bool){
+    func setAutoPopUpKeyboard(_ boolValue: Bool){
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             if let result = fetchedResult{
                 //print(String(result.count))
                 if result.count == 0{
-                    let entity = NSEntityDescription.insertNewObjectForEntityForName("Setting", inManagedObjectContext: context) as! Setting
-                    entity.keyboardAutoPop = boolValue
+                    let entity = NSEntityDescription.insertNewObject(forEntityName: "Setting", into: context) as! Setting
+                    entity.keyboardAutoPop = boolValue as NSNumber?
                     entity.autoAdd = true
                     entity.questionNum = 10
                     try! context.save()
@@ -133,7 +133,7 @@ class SettingService{
     
     func getAutoPopUPKeyboard() -> Bool{
         do{
-            let fetchedResult = try context.executeFetchRequest(fetchRequest) as? [Setting]
+            let fetchedResult = try context.fetch(fetchRequest) as? [Setting]
             if let result = fetchedResult{
                 if result.count != 0{
                     return (result[0].keyboardAutoPop as! Bool)

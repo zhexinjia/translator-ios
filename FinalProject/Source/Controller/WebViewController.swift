@@ -15,14 +15,14 @@ class WebViewController: UIViewController {
     let urlString = "https://en.m.wiktionary.org/wiki/"
     var currentString:String? = nil
     var lastString:String? = nil
-    var URL:NSURL?
+    var URL:Foundation.URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadWeb()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         if currentString != lastString{
             loadWeb()
             lastString = currentString
@@ -33,25 +33,25 @@ class WebViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    @IBAction func homeButtonClicked(sender: AnyObject) {
-        webView.loadRequest(NSURLRequest(URL: NSURL(string: urlString)!))
+    @IBAction func homeButtonClicked(_ sender: AnyObject) {
+        webView.loadRequest(URLRequest(url: Foundation.URL(string: urlString)!))
         currentString = nil
         lastString = nil
     }
     
     
     
-    func setString(word:String){
+    func setString(_ word:String){
         currentString = word
     }
     
     func loadWeb(){
         if currentString == nil{
-            URL = NSURL(string: urlString)
+            URL = Foundation.URL(string: urlString)
         }else{
-            URL = NSURL(string: urlString + currentString!)
+            URL = Foundation.URL(string: urlString + currentString!)
         }
-        webView.loadRequest(NSURLRequest(URL: URL!))
+        webView.loadRequest(URLRequest(url: URL!))
     }
     
 

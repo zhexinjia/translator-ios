@@ -11,7 +11,7 @@ import Foundation
 
 
 public extension NSFetchRequest {
-	public convenience init<T:NSManagedObject where T:NamedEntity>(namedEntity: T.Type) {
+	public convenience init<T:NSManagedObject>(namedEntity: T.Type) where T:NamedEntity {
 		self.init(entityName: namedEntity.entityName)
 	}
 }

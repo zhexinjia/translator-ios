@@ -11,7 +11,7 @@ import Foundation
 
 
 public extension NSEntityDescription {
-	public class func insertNewObjectForNamedEntity<T:NSManagedObject where T:NamedEntity>(namedEntity: T.Type, inManagedObjectContext context: NSManagedObjectContext) -> T {
-		return self.insertNewObjectForEntityForName(namedEntity.entityName, inManagedObjectContext: context) as! T
+	public class func insertNewObjectForNamedEntity<T:NSManagedObject>(_ namedEntity: T.Type, inManagedObjectContext context: NSManagedObjectContext) -> T where T:NamedEntity {
+		return self.insertNewObject(forEntityName: namedEntity.entityName, into: context) as! T
 	}
 }

@@ -11,7 +11,7 @@ import CoreData
 import CoreDataService
 
 extension Int{
-    public static func random(upper:Int) -> Int{
+    public static func random(_ upper:Int) -> Int{
         //generate random int between 0 and upper(include)
         return Int(arc4random_uniform(UInt32(upper)))
     }
@@ -26,7 +26,7 @@ class TestService{
     
     let coreDataService:CoreDataService
     let context:NSManagedObjectContext
-    let historyFetchRequest:NSFetchRequest
+    let historyFetchRequest:NSFetchRequest<AnyObject>
     var historyFetchedResults:[VocaHistory]? = nil
     
     var questionArray:[Vocabulary] = []
@@ -48,7 +48,7 @@ class TestService{
         historyFetchRequest = NSFetchRequest(entityName: "VocaHistory")
         
         do{
-            historyFetchedResults = try context.executeFetchRequest(historyFetchRequest) as? [VocaHistory]
+            historyFetchedResults = try context.fetch(historyFetchRequest) as? [VocaHistory]
             //print(historyFetchedResults?.count)
             
             for result in historyFetchedResults!{
@@ -57,7 +57,7 @@ class TestService{
                 let predicate = NSPredicate(format: "word = %@", result)
                 vocabularyFetchRequest.predicate = predicate
                 
-                let vocabularyFetchedResults = try context.executeFetchRequest(vocabularyFetchRequest) as! [Vocabulary]
+                let vocabularyFetchedResults = try context.fetch(vocabularyFetchRequest) as! [Vocabulary]
                 //print(vocabularyFetchedResults.count)
                 questionArray.append(vocabularyFetchedResults[0])
             }
@@ -66,7 +66,7 @@ class TestService{
         do{
             let fetchedRequest = NSFetchRequest(entityName: "Vocabulary")
             do{
-                let fetchedResults = try context.executeFetchRequest(fetchedRequest) as! [Vocabulary]
+                let fetchedResults = try context.fetch(fetchedRequest) as! [Vocabulary]
                 for result in fetchedResults{
                     answerArray.append(result.chinese!)
                 }
@@ -105,7 +105,7 @@ class TestService{
         correctAnswerString = questionArray[randomIndex!].chinese
         
         
-        return "Choose the correct definition for \(questionLabel.uppercaseString): "
+        return "Choose the correct definition for \(questionLabel.uppercased()): "
     }
     
     
@@ -133,7 +133,7 @@ class TestService{
         }
     }
     
-    func checkAnswer(answerIndex:Int) -> Bool{
+    func checkAnswer(_ answerIndex:Int) -> Bool{
         if answerIndex == correctAnswerInt{
             return true
         }else{

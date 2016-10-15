@@ -17,7 +17,7 @@ class DataService{
     let context:NSManagedObjectContext?
     var autoAdding:Bool?
     
-    private init(){
+    fileprivate init(){
         coreDataService = CoreDataService.sharedCoreDataService
         context = coreDataService?.mainQueueContext
         
@@ -28,12 +28,12 @@ class DataService{
     
     
     //get the Chinese definition
-    func getDefination(vocabulary:String) -> String{
-        let word = vocabulary.lowercaseString
+    func getDefination(_ vocabulary:String) -> String{
+        let word = vocabulary.lowercased()
         let fetchRequest = NSFetchRequest(entityName: "Vocabulary")
         let predicate = NSPredicate(format: "english = %@", word)
         fetchRequest.predicate = predicate
-        let count = context?.countForFetchRequest(fetchRequest, error: nil)
+        let count = context?.count(for: fetchRequest, error: nil)
         
         guard count != NSNotFound else{
             fatalError("Can not get \(word) in database")
@@ -49,7 +49,7 @@ class DataService{
         
         var definition:String = ""
         do{
-            let fetchedResult = try context?.executeFetchRequest(fetchRequest) as! [Vocabulary]
+            let fetchedResult = try context?.fetch(fetchRequest) as! [Vocabulary]
             for item in fetchedResult{
                 definition += item.chinese!
             }
@@ -60,12 +60,12 @@ class DataService{
         
     }
     
-    func getScentence(vocabulary:String) ->String{
-        let word = vocabulary.lowercaseString
+    func getScentence(_ vocabulary:String) ->String{
+        let word = vocabulary.lowercased()
         let fetchRequest = NSFetchRequest(entityName: "Vocabulary")
         let predicate = NSPredicate(format: "english = %@", word)
         fetchRequest.predicate = predicate
-        let count = context?.countForFetchRequest(fetchRequest, error: nil)
+        let count = context?.count(for: fetchRequest, error: nil)
         
         guard count != NSNotFound else{
             fatalError("Can not get \(word) in database")
@@ -80,7 +80,7 @@ class DataService{
         
         var example:String = ""
         do{
-            let fetchedResult = try context?.executeFetchRequest(fetchRequest) as! [Vocabulary]
+            let fetchedResult = try context?.fetch(fetchRequest) as! [Vocabulary]
             for item in fetchedResult{
                 example += item.example!
             }
@@ -90,7 +90,7 @@ class DataService{
         return example
     }
     
-    func SaveDataFromWeb(word:String) -> Bool{
+    func SaveDataFromWeb(_ word:String) -> Bool{
         let definition = getDefinitionFromWeb(word)
         let example = getScentenceFromWeb(word)
         guard definition != "" else{
@@ -98,7 +98,7 @@ class DataService{
             return false
         }
         
-        let entity = NSEntityDescription.insertNewObjectForEntityForName("Vocabulary", inManagedObjectContext: context!) as! Vocabulary
+        let entity = NSEntityDescription.insertNewObject(forEntityName: "Vocabulary", into: context!) as! Vocabulary
         entity.english = word
         entity.chinese = definition
         entity.example = example
@@ -110,12 +110,12 @@ class DataService{
         return true
     }
     
-    func saveWordToHistory(vocabulary:String) -> Bool{
-        let word = vocabulary.lowercaseString
+    func saveWordToHistory(_ vocabulary:String) -> Bool{
+        let word = vocabulary.lowercased()
         let fetchHistory = NSFetchRequest(entityName: "VocaHistory")
         let predicate = NSPredicate(format: "english = %@", word)
         fetchHistory.predicate = predicate
-        let count = context?.countForFetchRequest(fetchHistory, error: nil)
+        let count = context?.count(for: fetchHistory, error: nil)
         
         //make sure this vocabulary is not in history, so count == 0
         guard count != NSNotFound && count == 0 else{
@@ -123,7 +123,7 @@ class DataService{
         }
         
         //save word to VocaHistory and update Vocabulary's relationship
-        let historyEntity = NSEntityDescription.insertNewObjectForEntityForName("VocaHistory", inManagedObjectContext: context!) as! VocaHistory
+        let historyEntity = NSEntityDescription.insertNewObject(forEntityName: "VocaHistory", into: context!) as! VocaHistory
         
         
         let fetchRequest = NSFetchRequest(entityName: "Vocabulary")
@@ -131,7 +131,7 @@ class DataService{
         fetchRequest.predicate = predicate
         
         do{
-            let fetchedResult = try context?.executeFetchRequest(fetchRequest) as! [Vocabulary]
+            let fetchedResult = try context?.fetch(fetchRequest) as! [Vocabulary]
             let vocabularyEntity = fetchedResult[0]
             vocabularyEntity.setValue(historyEntity, forKey: "word")
             historyEntity.english = word
@@ -150,15 +150,15 @@ class DataService{
     
     
     
-    func getDefinitionFromWeb(word:String) ->String{
+    func getDefinitionFromWeb(_ word:String) ->String{
         var result:String = ""
         
         let preURL = "http://www.youdao.com/w/eng/"
         let URL = preURL+word
-        let data = NSData(contentsOfURL: NSURL(string: URL)!)
-        let doc = TFHpple(HTMLData: data)
+        let data = try? Data(contentsOf: Foundation.URL(string: URL)!)
+        let doc = TFHpple(htmlData: data)
         let searchString = "//div[@class='trans-wrapper clearfix']/div[@class='trans-container']/ul/li"
-        if let elements = doc.searchWithXPathQuery(searchString) as? [TFHppleElement]{
+        if let elements = doc?.search(withXPathQuery: searchString) as? [TFHppleElement]{
             //print("counter \(elements.count)")
             for element in elements{
                 result += element.content + "\n"
@@ -171,17 +171,17 @@ class DataService{
     
     
     //get the example how to use the vocabulary
-    func getScentenceFromWeb(word:String) -> String{
+    func getScentenceFromWeb(_ word:String) -> String{
         var result:String = ""
         
         let prefixURL = "http://m.youdao.com/singledict?q="
         let surfixURL = "&le=eng&dict=blng_sents&more=true"
         let URL = prefixURL + word + surfixURL
-        let data = NSData(contentsOfURL: NSURL(string: URL)!)
-        let doc = TFHpple(HTMLData: data)
+        let data = try? Data(contentsOf: Foundation.URL(string: URL)!)
+        let doc = TFHpple(htmlData: data)
         
         let searchString = "//div[@class=\"col2\"]/p"
-        if let elements = doc.searchWithXPathQuery(searchString) as? [TFHppleElement]{
+        if let elements = doc?.search(withXPathQuery: searchString) as? [TFHppleElement]{
             for element in elements{
                 result += element.content + "\n"
             }
