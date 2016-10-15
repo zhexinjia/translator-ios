@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15F34" minimumToolsVersion="Xcode 4.3">
+    <entity name="Setting" representedClassName=".Setting" syncable="YES">
+        <attribute name="autoAdd" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="keyboardAutoPop" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="questionNum" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="Vocabulary" representedClassName=".Vocabulary" syncable="YES">
+        <attribute name="chinese" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="english" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="example" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="word" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="VocaHistory" inverseName="word" inverseEntity="VocaHistory" syncable="YES"/>
+    </entity>
+    <entity name="VocaHistory" representedClassName=".VocaHistory" syncable="YES">
+        <attribute name="english" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="word" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Vocabulary" inverseName="word" inverseEntity="Vocabulary" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Vocabulary" positionX="-270" positionY="-108" width="128" height="103"/>
+        <element name="VocaHistory" positionX="-83" positionY="-91" width="128" height="73"/>
+        <element name="Setting" positionX="-99" positionY="-252" width="128" height="88"/>
+    </elements>
+</model>
